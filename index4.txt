@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Final Birthday Ultra Version</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  overflow: hidden;
+  perspective: 1200px;
+}
+
+/* ⭐ STARS */
+.star {
+  position: absolute;
+  top: -20px;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px white;
+  animation: fallStar linear forwards;
+  z-index: 2;
+}
+
+@keyframes fallStar {
+  to {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+/* SCENE */
+.scene { width:100%; height:100vh; position:relative; }
+
+.card {
+  width:100%; height:100%;
+  position:absolute;
+  transform-style:preserve-3d;
+  transition:1.5s;
+}
+
+.card.flip { transform: rotateY(180deg); }
+
+.face {
+  position:absolute;
+  width:100%; height:100%;
+  backface-visibility:hidden;
+}
+
+/* FRONT */
+.front {
+  background: linear-gradient(to right,#ff758c,#ff7eb3);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  color:white;
+}
+
+.cake {
+  position:relative;
+  margin-top:120px;
+  transition:0.6s ease;
+}
+
+.base {
+  width:260px;
+  height:120px;
+  background:#ffcc80;
+  border-radius:12px;
+}
+
+.cake.cut .base{
+  background:linear-gradient(to right,#ffcc80 50%, #ffe0b2 50%);
+}
+
+/* KNIFE */
+#knife{
+  position:absolute;
+  top:-30px;
+  left:-120px;
+  width:120px;
+  height:6px;
+  background:silver;
+  border-radius:3px;
+  transform:rotate(20deg);
+  opacity:0;
+  z-index:5;
+}
+
+.candle {
+  width:12px;
+  height:50px;
+  background:white;
+  position:absolute;
+  top:-50px;
+  border-radius:4px;
+}
+
+.c1{left:30%;}
+.c2{left:45%;}
+.c3{left:60%;}
+.c4{left:75%;}
+
+/* ❌ NO FLICKER */
+.flame {
+  width:12px;
+  height:22px;
+  background:orange;
+  border-radius:50%;
+  position:absolute;
+  top:-22px;
+}
+
+/* BACK */
+.back {
+  transform:rotateY(180deg);
+  position:relative;
+  overflow:hidden;
+}
+
+.back-bg {
+  position:absolute;
+  width:100%; height:100%;
+  background:linear-gradient(120deg,#ff3d77,#ff9a3d,#5cff6b,#3dbbff,#9b5cff);
+  background-size:400% 400%;
+  animation:bgMove 8s infinite;
+}
+
+@keyframes bgMove {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.content {
+  position:relative;
+  z-index:3;
+  text-align:center;
+  margin-top:120px;
+  color:white;
+}
+
+button {
+  margin-top:20px;
+  padding:14px 28px;
+  font-size:22px;
+  border:none;
+  border-radius:30px;
+  background:#ffeb3b;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#cutCakeBtn {
+  display:none;
+  margin-top:15px;
+  background:#ff5722;
+  color:white;
+}
+
+.loadingGift {
+  position:absolute;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  font-size:28px;
+  z-index:6;
+}
+
+.finalScreen {
+  position:absolute;
+  width:100%; height:100%;
+  background:linear-gradient(135deg,#ff3d77,#4d96ff,#9b5cff);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  text-align:center;
+  z-index:10;
+}
+
+.confetti {
+  position:absolute;
+  width:10px;
+  height:10px;
+  top:-10px;
+  animation:fall linear forwards;
+}
+
+@keyframes fall {
+  to {transform:translateY(110vh) rotate(720deg); opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgMusic" loop src="birthday.mp3"></audio>
+<audio id="blowSound" src="blow.mp3"></audio>
+
+<div class="scene">
+<div class="card" id="card">
+
+<!-- FRONT -->
+<div class="face front">
+
+<h1>🎂 Blow Candles</h1>
+
+<div class="cake" id="cake">
+<div class="base"></div>
+
+<div id="knife"></div>
+
+<div class="candle c1"><div class="flame"></div></div>
+<div class="candle c2"><div class="flame"></div></div>
+<div class="candle c3"><div class="flame"></div></div>
+<div class="candle c4"><div class="flame"></div></div>
+</div>
+
+<button onclick="blowCandles()">🕯️ Blow</button>
+<button id="cutCakeBtn" onclick="cutCake()">🎂 Cut Cake</button>
+<button onclick="flipPage()">🎉 Celebrate</button>
+
+</div>
+
+<!-- BACK -->
+<div class="face back">
+
+<div class="back-bg"></div>
+
+<div class="loadingGift" id="loadingGift">🎁 Loading...</div>
+
+<div class="content">
+<h1 id="trollText" style="font-family:'Great Vibes', cursive;font-style:italic;font-size:65px;">
+🎉 Happy Birthday 🎂💖
+</h1>
+
+<button id="giftBtn" onclick="handleGift()">🎁 Get Gift</button>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* ⭐ STARS */
+setInterval(()=>{
+let s=document.createElement("div");
+s.className="star";
+s.style.left=Math.random()*100+"vw";
+s.style.animationDuration=(2+Math.random()*3)+"s";
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),5000);
+},200);
+
+/* 🎵 MUSIC ONLY ON CLICK */
+function blowCandles(){
+
+let music=document.getElementById("bgMusic");
+
+if(music.paused){
+  music.volume=0.4;
+  music.play().catch(()=>{});
+}
+
+let sound=document.getElementById("blowSound");
+sound.pause();
+sound.currentTime=0;
+sound.play();
+
+/* 💨 blow effect */
+document.querySelectorAll(".flame").forEach((f,i)=>{
+setTimeout(()=>{
+
+f.style.transition="0.9s ease";
+f.style.transformOrigin="bottom center";
+f.style.transform=`
+rotate(${Math.random()*40 - 20}deg)
+translateY(25px)
+scale(0)
+`;
+f.style.opacity="0";
+
+},i*250);
+});
+
+setTimeout(()=>{
+document.getElementById("cutCakeBtn").style.display="inline-block";
+},2500);
+}
+
+/* CUT */
+function cutCake(){
+let knife=document.getElementById("knife");
+let cake=document.getElementById("cake");
+
+knife.style.opacity="1";
+
+knife.animate([
+{transform:"translateX(0) rotate(20deg)"},
+{transform:"translateX(260px) rotate(20deg)"}
+],{duration:800,easing:"ease-in-out"});
+
+setTimeout(()=>{
+cake.classList.add("cut");
+},400);
+
+spawnConfetti();
+}
+
+/* FLIP */
+function flipPage(){
+document.getElementById("card").classList.add("flip");
+}
+
+/* GIFT FLOW */
+let moveCount=0;
+let texts=["😆 Catch me","😂 Too slow","😜 Almost there","🤣 Nope!"];
+
+function handleGift(){
+let btn=document.getElementById("giftBtn");
+let loader=document.getElementById("loadingGift");
+
+if(moveCount<10){
+moveCount++;
+btn.style.position="absolute";
+btn.style.top=(45+Math.random()*40)+"%";
+btn.style.left=(10+Math.random()*70)+"%";
+document.getElementById("trollText").innerHTML=texts[moveCount%texts.length];
+}else{
+loader.style.display="flex";
+
+setTimeout(()=>{
+loader.style.display="none";
+
+document.querySelector(".back").innerHTML=`
+<div class="finalScreen">
+
+<h1>😂 GOT YOU!!</h1>
+<p>💌 Tap below for final message</p>
+
+<div onclick="showQuestion()" style="
+margin-top:25px;
+background:rgba(255,255,255,0.15);
+padding:25px;
+border-radius:20px;
+cursor:pointer;
+">
+
+<h2>💖 Open</h2>
+
+</div>
+
+</div>`;
+
+spawnConfetti();
+},2000);
+}
+}
+
+/* QUESTION */
+function showQuestion(){
+document.querySelector(".back").innerHTML=`
+<div class="finalScreen">
+
+<h1>🙏 Want to say Thank You?</h1>
+
+<div>
+<button onclick="sayYes()" style="padding:12px 25px;background:#4caf50;border:none;color:white;border-radius:20px;">YES</button>
+<button onclick="runAwayNo()" id="noBtn" style="padding:12px 25px;background:#f44336;border:none;color:white;border-radius:20px;position:absolute;">NO</button>
+</div>
+
+</div>`;
+}
+
+function runAwayNo(){
+let btn=document.getElementById("noBtn");
+btn.style.left=Math.random()*80+"%";
+btn.style.top=Math.random()*60+"%";
+}
+
+/* FINAL THANK YOU */
+function sayYes(){
+document.querySelector(".back").innerHTML=`
+<div class="finalScreen">
+<h1>💖 THANK YOU!</h1>
+<p>🎉 I hope this made your day special</p>
+<h2>✨ Stay Happy ✨</h2>
+</div>`;
+spawnConfetti();
+}
+
+/* CONFETTI */
+function spawnConfetti(){
+for(let i=0;i<80;i++){
+let c=document.createElement("div");
+c.className="confetti";
+c.style.left=Math.random()*100+"%";
+c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+c.style.animationDuration=(2+Math.random()*3)+"s";
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),5000);
+}
+}
+
+</script>
+
+</body>
+</html>
